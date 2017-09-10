@@ -1,6 +1,7 @@
 
 #include <stdlib.h>
 #include <GL/glut.h>
+#include <GL/gl.h>
 #include <stdio.h>
 #include <string>
 #include <fstream>
@@ -60,10 +61,8 @@ void drawString(char* str) {
 	for (int i = 0; i < n; i++)
 		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *(str + i));
 }
-void display(void) {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	GLfloat white[] = { 1.0,1.0,1.0,1.0 };
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, white);
+
+void showInfo() {
 	char str[100];
 	GLfloat p[] = { 0,0,0,0 };
 	glRasterPos2i(0, 0);
@@ -79,8 +78,16 @@ void display(void) {
 	drawString(str);
 	p[1] += 0.7;
 	glRasterPos3fv(p);
-	sprintf_s(str, "color r:%f g:%f b:%f ", curColor[0], curColor[1],curColor[2]);
+	sprintf_s(str, "color r:%f g:%f b:%f ", curColor[0], curColor[1], curColor[2]);
 	drawString(str);
+}
+
+void display(void) {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	GLfloat white[] = { 1.0,1.0,1.0,1.0 };
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, white);
+	showInfo();
+
 	glPushMatrix();
 	glTranslatef(6, 5, 0.0);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, curColor);
@@ -379,8 +386,14 @@ int main(int argc, char **argv) {
 	glutCreateWindow("hello world");
 	init();
 	glutReshapeFunc(reshape);
-	input();
-	// inputFile("E:\\CG\\作业0\\bunny_1k.obj");
+	cout << "等待加载模型" << endl;
+	if (argc >= 2) {
+		cout << "加载文件中" << endl;
+		inputFile(argv[1]);
+	} else {
+		cout << "未获取到文件参数，等待标准输入流" << endl;
+		input();
+	}
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
 	glutSpecialFunc(specialKeyboard);
